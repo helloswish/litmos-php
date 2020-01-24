@@ -1,7 +1,7 @@
 {
   "name": "helloswish/litmos-php",
   "description": "Litmos API abstraction for PHP",
-  "version": "1.0",
+  "version": "1.0.0",
   "license": "MIT",
   "require": {
     "php": ">=5.3.0"
