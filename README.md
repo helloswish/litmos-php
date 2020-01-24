@@ -1,1 +1,1 @@
-# litmos-php
+Litmos API abstraction for PHP
