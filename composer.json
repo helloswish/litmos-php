@@ -1,5 +1,5 @@
 {
-  "name": "helloswish/litmos-php",
+  "name": "swishdigital/litmos-php",
   "description": "Litmos API abstraction for PHP",
   "version": "1.0.0",
   "license": "MIT",
