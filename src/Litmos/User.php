@@ -87,11 +87,6 @@ class User
     /**
      * @var bool
      */
-    private $skip_first_login;
-
-    /**
-     * @var bool
-     */
     private $is_custom_username;
 
     /**
@@ -100,9 +95,14 @@ class User
     private $password;
 
     /**
-     * @var UserCourses
+     * @var bool
      */
-    private $courses;
+    private $skip_first_login;
+
+    /**
+     * @var string
+     */
+    private $timezone;
 
     /**
      * @param Service               $litmos_service
@@ -120,7 +120,10 @@ class User
      * @param string                $phone_mobile
      * @param \DateTime             $last_login
      * @param string                $login_key
+     * @param bool                  $is_custom_username
+     * @param string                $password
      * @param bool                  $skip_first_login
+     * @param string                $timezone
      */
     public function __construct(
         Service $litmos_service,
@@ -136,9 +139,12 @@ class User
         $skype = null,
         $phone_work = null,
         $phone_mobile = null,
-        \DateTime $last_login = null,
+        $last_login = null,
         $login_key = null,
-        $skip_first_login = null
+        $is_custom_username = null,
+        $password = null,
+        $skip_first_login = null,
+        $timezone = null
     ) {
         $this->service = $litmos_service;
 
@@ -166,8 +172,10 @@ class User
             $this->phone_mobile     = $phone_mobile;
             $this->last_login       = $last_login;
             $this->login_key        = $login_key;
+            $this->is_custom_username = $is_custom_username;
+            $this->password         = $password;
             $this->skip_first_login = $skip_first_login;
-            $this->courses          = new UserCourses($litmos_service, $this);
+            $this->timezone         = $timezone;
         }
 
         // Check if user_name is an email address.
@@ -201,9 +209,12 @@ class User
         $skype            = (string)$xml->Skype;
         $phone_work       = (string)$xml->PhoneWork;
         $phone_mobile     = (string)$xml->PhoneMobile;
-        $last_login       = (string)$xml->LastLogin ? new \DateTime((string)$xml->LastLogin) : new \DateTime(-1);
+        $last_login       = (string)$xml->LastLogin;
         $login_key        = (string)$xml->LoginKey;
+        $is_custom_username = filter_var((string)$xml->IsCustomUsername, FILTER_VALIDATE_BOOLEAN);
+        $password         = (string)$xml->Password;
         $skip_first_login = filter_var((string)$xml->SkipFirstLogin, FILTER_VALIDATE_BOOLEAN);
+        $timezone         = (string)$xml->Timezone;
 
         $user = new User(
             $service,
@@ -221,7 +232,10 @@ class User
             $phone_mobile,
             $last_login,
             $login_key,
-            $skip_first_login
+            $is_custom_username,
+            $password,
+            $skip_first_login,
+            $timezone
         );
 
         return $user;
@@ -245,11 +259,12 @@ class User
             'Skype'              => $this->skype,
             'PhoneWork'          => $this->phone_work,
             'PhoneMobile'        => $this->phone_mobile,
-            'LastLogin'          => $this->last_login->format(DATE_ISO8601),
+            'LastLogin'          => $this->last_login,
             'LoginKey'           => $this->login_key,
             'IsCustomerUsername' => $this->is_custom_username,
             'Password'           => $this->password ? $this->password : '',
-            'SkipFirstLogin'     => $this->skip_first_login
+            'SkipFirstLogin'     => $this->skip_first_login,
+            'Timezone'           => $this->timezone
         );
         $xml        = new \SimpleXMLElement('<User/>');
         foreach ($user_nodes as $key => $value) {
@@ -509,6 +524,14 @@ class User
     }
 
     /**
+    * @return string
+    */
+    public function getTimezone()
+    {
+        return $this->timezone;
+    }
+
+    /**
      * @param string $user_name
      *
      * @throws Exception\InvalidArgumentException
@@ -545,7 +568,9 @@ class User
         $this->phone_mobile     = $user->getPhoneMobile();
         $this->last_login       = $user->getLastLogin();
         $this->login_key        = $user->getLoginKey();
+        $this->is_custom_username = $user->getIsCustomUsername();
         $this->skip_first_login = $user->getSkipFirstLogin();
+        $this->timezone         = $user->getTimezone();
         $this->courses          = new UserCourses($this->service, $this);
     }
 }

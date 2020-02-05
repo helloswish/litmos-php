@@ -26,6 +26,7 @@ class Users
     public function getAll(PagingSearch $ps = null,$qs = null)
     {
         $response = $this->service->get('/users', $ps, $qs);
+        $users = [];
 
         foreach (json_decode($response) as $user) {
             $id         = (string)$user->Id;
@@ -62,10 +63,6 @@ class Users
      * @param string $first_name
      * @param string $last_name
      * @param string $email
-     * @param string $skype
-     * @param string $phone_work
-     * @param string $phone_mobile
-     * @param bool   $skip_first_login
      *
      * @return User
      */
@@ -73,11 +70,7 @@ class Users
         $user_name,
         $first_name,
         $last_name,
-        $email = '',
-        $skype = '',
-        $phone_work = '',
-        $phone_mobile = '',
-        $skip_first_login = false
+        $email = ''
     ) {
         $user = new User(
             $this->service,
@@ -90,12 +83,15 @@ class Users
             'Learner',
             false,
             true,
-            $skype,
-            $phone_work,
-            $phone_mobile,
-            new \DateTime(),
             '',
-            $skip_first_login
+            '',
+            '',
+            null,
+            '',
+            false,
+            '',
+            true,
+            ''
         );
 
         $req_xml = $user->toXml();

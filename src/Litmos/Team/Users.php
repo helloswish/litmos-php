@@ -62,7 +62,7 @@ class Users
         }
 
         $xml_str = $xml->asXML();
-
+        
         $this->service->post("/teams/{$this->team_id}/users", $xml_str);
     }
 
